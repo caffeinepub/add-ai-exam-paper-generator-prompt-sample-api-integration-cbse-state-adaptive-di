@@ -1,0 +1,44 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-enable-local-testing-with-the-user-provided-gemini-api-key-by-configuring-the-app-to-read-it-from-a-non-committed-local-environment-file-do-not-hardcode-or-commit-the-key-anywhere-in-the-repository-the-key-to-use-for-local-testing-is-aizasycec7w-tohy2xawnwnumkmmwklwsex3efu",
+      "featureTitle": "Enable local testing with the user-provided Gemini API key by configuring the app to read it from a non-committed local environment file (do not hardcode or commit the key anywhere in the repository). The key to use for local testing is: AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU.",
+      "files": [
+        "frontend/.gitignore"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-14"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-llm-demo-setup-documentation-to-include-clear-english-instructions-for-testing-with-gemini-including-where-to-put-the-api-key-and-which-environment-variables-control-the-base-url-and-model-while-keeping-all-committed-templates-repo-safe-no-secrets",
+      "featureTitle": "Update the LLM demo/setup documentation to include clear English instructions for testing with Gemini (including where to put the API key and which environment variables control the base URL and model), while keeping all committed templates repo-safe (no secrets).",
+      "files": [
+        "frontend/.env.example",
+        "frontend/LLM_DEMO_SETUP.md"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-15"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

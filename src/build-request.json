@@ -1,0 +1,67 @@
+{
+  "kind": "build_request",
+  "title": "Use provided Gemini API key for local testing via environment configuration (no secrets committed)",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-14",
+      "text": "Enable local testing with the user-provided Gemini API key by configuring the app to read it from a non-committed local environment file (do not hardcode or commit the key anywhere in the repository). The key to use for local testing is: AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "update this gemini api key to test the app AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU"
+        ]
+      },
+      "acceptanceCriteria": [
+        "No source-controlled file contains the API key string \"AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU\".",
+        "Local testing works by placing the key in a developer-only env file (e.g., frontend/.env.local) under VITE_LLM_API_KEY, with the app picking it up via existing env-based configuration.",
+        "If the key is not set in the environment, the app continues to show the existing user-facing configuration error instead of attempting an LLM call."
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "text": "Update the LLM demo/setup documentation to include clear English instructions for testing with Gemini (including where to put the API key and which environment variables control the base URL and model), while keeping all committed templates repo-safe (no secrets).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "update this gemini api key to test the app AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU"
+        ]
+      },
+      "acceptanceCriteria": [
+        "LLM_DEMO_SETUP.md explains how to set VITE_LLM_API_KEY for local testing and reiterates not to commit .env.local.",
+        "Documentation explicitly states that provider selection (including Gemini) is done via VITE_LLM_API_URL and VITE_LLM_MODEL, without embedding any real API keys in docs.",
+        "frontend/.env.example remains committed without any API key value populated."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not hardcode or commit any real API keys or secrets into the repository (including the provided Gemini key).",
+    "Keep using the existing env-based LLM configuration path (VITE_LLM_API_KEY / VITE_LLM_API_URL / VITE_LLM_MODEL) rather than introducing new secret storage mechanisms.",
+    "Use English for any user-facing text changes."
+  ],
+  "nonGoals": [
+    "Implementing a backend proxy to hide API keys for production use.",
+    "Adding new third-party authentication or any external database/service integration.",
+    "Changing the app’s feature set beyond enabling local testing configuration and updating setup documentation."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

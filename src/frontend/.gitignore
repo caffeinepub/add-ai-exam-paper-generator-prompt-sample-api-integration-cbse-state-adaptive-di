@@ -1,0 +1,6 @@
+# Local environment files - DO NOT COMMIT
+.env.local
+.env.*.local
+
+# These files may contain sensitive API keys and secrets
+# Use .env.example as a template instead

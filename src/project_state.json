@@ -1,0 +1,194 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 9,
+  "summary": "AI Tutor app (Internet Computer stack) with core features: homework helper (image upload → OCR → step-by-step explanation + TTS), daily AI study planner, parent dashboard analytics, subscription billing (Stripe/Razorpay), and exam/testing module (exams, questions, attempts, rewards) including AI-generated exam paper creation aligned to Indian curricula (CBSE/State).",
+  "architectural_notes": [
+    "Target stack discussed: Internet Computer backend (Motoko) with React + TypeScript + Tailwind frontend; Next.js noted as desired but may not be supported in this environment.",
+    "Subscriptions: payment initiation handled client-side with Stripe/Razorpay; backend canister verifies webhooks and maintains user billing/entitlement state.",
+    "Exam/testing persistence: PostgreSQL schema additions for exams/questions/attempts/answers/rewards.",
+    "Ensure no dummy/hardcoded LLM API keys ship in demo builds; use environment variables/secret management and safe placeholder values in client-visible code.",
+    "Gemini API key must be provided via environment/secret configuration (not hardcoded or committed); app should support updating the LLM key via env/config for testing."
+  ],
+  "known_issues": [
+    "Platform/tooling limitation mentioned: Next.js frontend generation not supported; fallback suggested to React + Vite + Tailwind.",
+    "Codebase may contain dummy/hardcoded LLM API keys that must be replaced/removed before client demos (use env/secret injection).",
+    "User supplied a real Gemini API key for testing; ensure it is not committed/hardcoded and rotate/revoke if it was ever exposed in code/logs."
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-create-a-strong-reusable-system-prompt-for-an-llm-that-generates-complete-school-exam-papers-for-indian-curricula-supporting-inputs-board-cbse-state-grade-subject-syllabus-scope-chapters-topics-duration-total-marks-and-desired-difficulty-target-the-prompt-must-enforce-1-a-mix-of-mcq-short-answer-problem-solving-2-automatic-difficulty-adjustment-across-questions-easy-medium-hard-distribution-3-clear-instructions-marking-scheme-4-output-in-a-strictly-parseable-json-format",
+      "title": "Create a strong, reusable **system prompt** for an LLM that generates complete school exam papers for Indian curricula, supporting inputs: board (CBSE/State), grade, subject, syllabus scope (chapters/topics), duration, total marks, and desired difficulty target. The prompt must enforce: (1) a mix of MCQ + short answer + problem solving, (2) automatic difficulty adjustment across questions (easy/medium/hard distribution), (3) clear instructions/marking scheme, (4) output in a strictly-parseable JSON format.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-frontend-sample-api-integration-that-demonstrates-how-to-call-a-generic-llm-http-endpoint-to-generate-an-exam-paper-using-the-backend-provided-prompt-payload-and-then-parses-displays-the-returned-json-exam-paper",
+      "title": "Add a frontend **sample API integration** that demonstrates how to call a generic LLM HTTP endpoint to generate an exam paper using the backend-provided prompt payload, and then parses/displays the returned JSON exam paper.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-minimal-exam-generator-ui-screen-page-that-lets-a-user-enter-board-cbse-state-grade-subject-chapters-topics-scope-total-marks-and-duration-then-runs-the-sample-integration-and-renders-the-generated-exam-paper-with-sections-and-question-types-mcq-options-short-answers-problem-solving",
+      "title": "Create a minimal **Exam Generator** UI screen/page that lets a user enter board (CBSE/State), grade, subject, chapters/topics scope, total marks, and duration; then runs the sample integration and renders the generated exam paper with sections and question types (MCQ options, short answers, problem-solving).",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-define-and-apply-a-coherent-distinctive-visual-theme-colors-typography-spacing-and-component-style-consistently-for-the-exam-generator-page-and-related-components-suitable-for-an-education-product-avoid-blue-purple-as-primary-colors-unless-explicitly-required",
+      "title": "Define and apply a coherent, distinctive visual theme (colors, typography, spacing, and component style) consistently for the Exam Generator page and related components, suitable for an education product. Avoid blue & purple as primary colors unless explicitly required.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-rich-ai-tutor-student-experience-in-the-react-frontend-that-uses-the-existing-generic-llm-http-integration-pattern-llmconfig-fetch-to-generate-tutoring-help-from-prompts-provide-a-simple-tutor-page-where-a-student-selects-grade-subject-topic-question-and-receives-step-by-step-explanations-then-records-the-session-as-a-progress-event-via-the-backend-progress-api",
+      "title": "Create a “Rich AI Tutor” student experience in the React frontend that uses the existing generic LLM HTTP integration pattern (llmConfig + fetch) to generate tutoring help from prompts. Provide a simple Tutor page where a student selects grade/subject/topic/question and receives step-by-step explanations, then records the session as a progress event via the backend progress API.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-role-based-navigation-and-dashboards-in-the-react-frontend-so-the-product-is-usable-by-schools-students-and-parents-include-1-a-minimal-onboarding-profile-screen-to-choose-role-school-context-2-a-student-dashboard-recent-activity-quick-link-to-tutor-and-exam-generator-and-3-a-parent-dashboard-showing-linked-students-and-their-progress-summaries",
+      "title": "Add role-based navigation and dashboards in the React frontend so the product is usable by schools, students, and parents. Include: (1) a minimal onboarding/profile screen to choose role + school context, (2) a Student Dashboard (recent activity, quick link to Tutor and Exam Generator), and (3) a Parent Dashboard showing linked students and their progress summaries.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-integrate-the-existing-exam-generator-feature-into-the-new-school-ready-app-shell-so-it-remains-accessible-and-wire-it-into-role-based-ux-e-g-teacher-student-access-as-appropriate-without-removing-the-current-exam-generator-capabilities",
+      "title": "Integrate the existing Exam Generator feature into the new school-ready app shell so it remains accessible, and wire it into role-based UX (e.g., Teacher/Student access as appropriate) without removing the current exam generator capabilities.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-any-dummy-hardcoded-llm-api-key-placeholders-from-the-runtime-configuration-so-the-app-never-ships-with-an-in-code-key-value-and-clearly-relies-on-environment-variables-for-client-demos",
+      "title": "Remove any dummy/hardcoded LLM API key placeholders from the runtime configuration so the app never ships with an in-code key value and clearly relies on environment variables for client demos.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-single-shared-validation-path-for-llm-configuration-that-is-used-by-both-the-exam-generator-and-tutor-llm-calls-returning-a-consistent-user-facing-error-when-the-key-is-missing-or-not-configured",
+      "title": "Add a single shared validation path for LLM configuration that is used by both the Exam Generator and Tutor LLM calls, returning a consistent user-facing error when the key is missing or not configured.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-provide-a-repo-safe-demo-configuration-template-for-clients-by-adding-an-environment-example-file-and-brief-setup-instructions-for-configuring-the-llm-endpoint-model-and-api-key",
+      "title": "Provide a repo-safe demo configuration template for clients by adding an environment example file and brief setup instructions for configuring the LLM endpoint, model, and API key.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enable-local-testing-with-the-user-provided-gemini-api-key-by-configuring-the-app-to-read-it-from-a-non-committed-local-environment-file-do-not-hardcode-or-commit-the-key-anywhere-in-the-repository-the-key-to-use-for-local-testing-is-aizasycec7w-tohy2xawnwnumkmmwklwsex3efu",
+      "title": "Enable local testing with the user-provided Gemini API key by configuring the app to read it from a non-committed local environment file (do not hardcode or commit the key anywhere in the repository). The key to use for local testing is: AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-llm-demo-setup-documentation-to-include-clear-english-instructions-for-testing-with-gemini-including-where-to-put-the-api-key-and-which-environment-variables-control-the-base-url-and-model-while-keeping-all-committed-templates-repo-safe-no-secrets",
+      "title": "Update the LLM demo/setup documentation to include clear English instructions for testing with Gemini (including where to put the API key and which environment variables control the base URL and model), while keeping all committed templates repo-safe (no secrets).",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Homework helper: student uploads homework photo; extract text (OCR), understand question, provide step-by-step explanation, and speak the answer (voice output). Provide backend flow + code.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "AI daily study plan generator: inputs grade/subjects/weak topics/exam dates; output daily study timetable. Provide AI prompt + backend logic.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Parent Dashboard: show daily study time, weak subjects, homework completion, AI tutor feedback, weekly progress report. Provide API + UI components.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Integrate subscription payments: Free trial, Monthly plan, Pay per session using Razorpay or Stripe; include backend + webhook flow.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Frontend UI pages for AI Tutor with Tailwind: Landing, Student dashboard, Voice tutor, Homework upload, Parent dashboard, Subscription page (user requested Next.js).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add exams/weekly tests data model support in PostgreSQL: Exams, Questions, StudentExamAttempts, StudentAnswers, Rewards + SQL migration script.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "AI prompt + sample API to generate school exam papers by grade/subject with mixed question types (MCQ/short/problem-solving), auto difficulty adjustment, Indian curriculum support (CBSE/State).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Implement a **sample API contract** for “Generate Exam Paper” within the app: define request/response types and add a backend canister method that validates/stores the request metadata and returns the assembled prompt payload (system prompt + user prompt content) for the frontend to send to an external LLM API.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "School-ready productization: add school/organization layer (multi-tenant), roles (school admin/teacher/student/parent), and admin UI to manage classes/students and view aggregated progress analytics.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Implement a school-ready multi-user foundation in the Motoko backend with explicit roles and relationships so the app can be used by schools, students, and parents. At minimum, support: (1) School entity, (2) user profile keyed by Internet Identity Principal, (3) roles: SchoolAdmin, Teacher, Student, Parent, (4) class/group membership for students, and (5) parent↔student linking so parents can view only their linked students.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Add backend progress tracking APIs for students that allow recording and querying learning activity needed for a parent dashboard. Track at least: tutoring sessions completed, topics covered, timestamps, and simple performance signals (e.g., self-reported understanding score 1–5 and/or correctness on quick checks). Provide aggregated queries suitable for dashboards (daily/weekly summaries, weak topics, recent activity).",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Add AI exam-paper generator prompt + sample API integration (CBSE/State, adaptive difficulty)",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

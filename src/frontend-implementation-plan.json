@@ -1,0 +1,59 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Gemini local testing via non-committed env config + repo-safe docs",
+  "requirements": [
+    {
+      "id": "REQ-14",
+      "summary": "Enable local Gemini testing by reading VITE_LLM_API_KEY from a developer-only env file without committing/hardcoding the key, and preserve existing missing-config error behavior.",
+      "acceptanceCriteria": [
+        "No source-controlled file contains the API key string \"AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU\".",
+        "Local testing works by placing the key in a developer-only env file (e.g., frontend/.env.local) under VITE_LLM_API_KEY, with the app picking it up via existing env-based configuration.",
+        "If the key is not set in the environment, the app continues to show the existing user-facing configuration error instead of attempting an LLM call."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/examGenerator/llmConfig.ts",
+          "operation": "modify",
+          "description": "Ensure LLM configuration is sourced exclusively from import.meta.env (VITE_LLM_API_KEY / VITE_LLM_API_URL / VITE_LLM_MODEL), with no fallback/hardcoded secrets, and that missing VITE_LLM_API_KEY returns the existing user-facing configuration error (so callers do not attempt an LLM call)."
+        },
+        {
+          "path": "frontend/src/features/examGenerator/generateExamPaperSample.ts",
+          "operation": "modify",
+          "description": "Confirm the exam-generation flow relies on validateLLMConfig() and returns the configuration error when invalid, without making an LLM request when VITE_LLM_API_KEY is absent."
+        },
+        {
+          "path": "frontend/src/features/tutor/generateTutorResponse.ts",
+          "operation": "modify",
+          "description": "Confirm the tutor flow relies on validateLLMConfig() and throws the existing configuration error when invalid, without making an LLM request when VITE_LLM_API_KEY is absent."
+        },
+        {
+          "path": "frontend/.gitignore",
+          "operation": "create",
+          "description": "Add a frontend-local gitignore that prevents committing developer-only env files (at minimum: .env.local and other .env.*.local patterns) to ensure the Gemini key cannot be accidentally committed."
+        }
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "summary": "Update LLM demo/setup documentation with clear English instructions for Gemini testing, including env var usage for API key, base URL, and model, while keeping templates repo-safe.",
+      "acceptanceCriteria": [
+        "LLM_DEMO_SETUP.md explains how to set VITE_LLM_API_KEY for local testing and reiterates not to commit .env.local.",
+        "Documentation explicitly states that provider selection (including Gemini) is done via VITE_LLM_API_URL and VITE_LLM_MODEL, without embedding any real API keys in docs.",
+        "frontend/.env.example remains committed without any API key value populated."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/LLM_DEMO_SETUP.md",
+          "operation": "modify",
+          "description": "Update the setup guide to include Gemini as a supported provider for local testing, with clear instructions to place the API key only in frontend/.env.local via VITE_LLM_API_KEY, reiterate not committing .env.local, and document that provider selection is controlled by VITE_LLM_API_URL (base URL) and VITE_LLM_MODEL (model name), including example values that contain no real keys."
+        },
+        {
+          "path": "frontend/.env.example",
+          "operation": "modify",
+          "description": "Keep the template repo-safe (VITE_LLM_API_KEY remains blank) while clarifying comments/examples that Gemini can be selected via VITE_LLM_API_URL and VITE_LLM_MODEL (no real key values included)."
+        }
+      ]
+    }
+  ]
+}
