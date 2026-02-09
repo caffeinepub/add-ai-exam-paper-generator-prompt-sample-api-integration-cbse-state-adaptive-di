@@ -1,24 +1,48 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-09T14:22:43.355Z",
-  "summary": "AppShell now passes the existing in-app navigation handler (setCurrentPage) into StudentDashboardPage, and StudentDashboardPage wires quick-action handlers intended to navigate to 'tutor' and 'exam-generator' via that callback. Click handling is present; keyboard accessibility support is partially evident but not fully verifiable from the truncated diff.",
+  "generatedAt": "2026-02-09T15:03:33.614Z",
+  "summary": "Frontend onboarding error handling was updated via a new error-mapping helper and OnboardingProfilePage now uses it; a frontend guard against selecting School Admin was added/retained with a specific message. Backend changes are shown only partially (truncated) and do not include evidence of createUserProfile permission fixes or email uniqueness validation being implemented.",
   "missing_requirements": [
     {
-      "id": "REQ-16",
-      "requirement": "Quick-action cards remain visually clickable and are keyboard-accessible (e.g., support Enter/Space activation) or are implemented with accessible interactive elements.",
-      "reason": "The diff shows an onKeyDown handler that listens for Enter/Space, but in the visible snippet the clickable Card itself is not shown as focusable (e.g., via tabIndex=0) nor given an explicit interactive role (e.g., role=\"button\"). Without a focusable/interactive element, keyboard users may not be able to reach the card to trigger the key handler. The file is truncated, so this may exist outside the shown section, but it is not evidenced in the provided diff.",
+      "id": "REQ-28",
+      "requirement": "Unblock self-service onboarding by ensuring an authenticated Internet Identity user can create their own non-admin profile (Student/Parent/Teacher) without receiving the authorization error, while rejecting anonymous callers with an authentication-required error and still disallowing self-service School Admin creation.",
+      "reason": "The diff excerpt of backend/main.mo does not show the createUserProfile implementation or any logic that changes/ensures permissions for Student/Parent/Teacher creation, anonymous rejection messaging, or explicit School Admin disallowance at the backend level. With truncation, this cannot be verified from provided evidence.",
       "evidence": [
-        "frontend/src/features/dashboards/student/StudentDashboardPage.tsx"
+        "backend/main.mo (truncated; createUserProfile not shown)"
+      ]
+    },
+    {
+      "id": "REQ-29",
+      "requirement": "Implement backend email uniqueness validation during profile creation (case-insensitive, trims whitespace) and reject duplicates with exact error text \"Email already registered\" without masking by duplicate-principal behavior.",
+      "reason": "No evidence in the provided backend/main.mo excerpt of an email index/check, normalization (trim/lowercase), or returning/trapping with the exact message \"Email already registered\" during profile creation. The relevant profile-creation function is not shown due to truncation.",
+      "evidence": [
+        "backend/main.mo (truncated; no email uniqueness logic shown)"
       ]
     }
   ],
-  "hallucinated_features": [],
-  "confidence": 0.64,
+  "hallucinated_features": [
+    {
+      "description": "Added a broad frontend error-mapping helper that introduces several new user-facing fallback messages (e.g., generic failure, profile-exists refresh guidance, login guidance, invalid-data message), beyond the specifically requested duplicate-email and avoiding generic permission error behavior.",
+      "reason": "REQ-30 only asked to display exactly \"Email already registered\" for that case and avoid incorrectly showing the generic permission message for other failures; the helper adds additional opinionated mappings and fallback copy not explicitly requested.",
+      "evidence": [
+        "frontend/src/features/onboarding/profileCreationErrors.ts"
+      ]
+    },
+    {
+      "description": "Frontend now shows a specific message blocking School Admin selection: \"School Admin accounts must be created by an existing administrator...\"",
+      "reason": "While the BuildRequest notes an existing frontend restriction must remain effective, it does not request adding/changing this specific user-facing copy as part of REQ-30.",
+      "evidence": [
+        "frontend/src/features/onboarding/OnboardingProfilePage.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.58,
   "changed_files": [
+    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/app/AppShell.tsx",
-    "frontend/src/features/dashboards/student/StudentDashboardPage.tsx",
+    "frontend/src/features/onboarding/OnboardingProfilePage.tsx",
+    "frontend/src/features/onboarding/profileCreationErrors.ts",
     "project_state.json"
   ]
 }

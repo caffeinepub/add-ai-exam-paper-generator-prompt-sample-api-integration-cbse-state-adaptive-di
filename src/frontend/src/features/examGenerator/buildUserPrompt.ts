@@ -20,7 +20,15 @@ export interface ExamGenerationInputs {
  * Converts UI inputs into a structured user prompt for the LLM
  */
 export function buildUserPrompt(inputs: ExamGenerationInputs): string {
-  const boardText = inputs.board === Board.CBSE ? 'CBSE' : 'State Board';
+  const boardTextMap: Record<Board, string> = {
+    [Board.CBSE]: 'CBSE',
+    [Board.State]: 'State Board',
+    [Board.ICSE]: 'ICSE',
+    [Board.IB]: 'IB',
+    [Board.IGCSE]: 'IGCSE',
+  };
+  
+  const boardText = boardTextMap[inputs.board] || 'CBSE';
   
   const chaptersText = inputs.chapters.length > 0 
     ? inputs.chapters.join(', ') 

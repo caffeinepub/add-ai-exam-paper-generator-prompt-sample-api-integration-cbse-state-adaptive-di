@@ -1,5 +1,6 @@
 /**
- * React Query mutation hook to create a new user profile.
+ * React Query mutation hook to create a new user profile via self-service onboarding.
+ * Calls backend createUserProfile method with the caller's principal.
  */
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -23,6 +24,7 @@ export function useCreateUserProfile() {
   return useMutation({
     mutationFn: async (params: CreateUserProfileParams) => {
       if (!actor) throw new Error('Actor not available');
+      
       return actor.createUserProfile(
         params.principal,
         params.name,
@@ -34,6 +36,9 @@ export function useCreateUserProfile() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+    },
+    onError: (error: Error) => {
+      console.error('Profile creation failed:', error);
     },
   });
 }

@@ -66,7 +66,25 @@ export function ExamGeneratorPage() {
   };
 
   const handleBoardChange = (value: string) => {
-    setBoard(value === 'CBSE' ? Board.CBSE : Board.State);
+    switch (value) {
+      case 'CBSE':
+        setBoard(Board.CBSE);
+        break;
+      case 'State':
+        setBoard(Board.State);
+        break;
+      case 'ICSE':
+        setBoard(Board.ICSE);
+        break;
+      case 'IB':
+        setBoard(Board.IB);
+        break;
+      case 'IGCSE':
+        setBoard(Board.IGCSE);
+        break;
+      default:
+        setBoard(Board.CBSE);
+    }
   };
 
   return (
@@ -79,7 +97,7 @@ export function ExamGeneratorPage() {
           </div>
           <h1 className="text-4xl font-bold tracking-tight mb-2">AI Exam Paper Generator</h1>
           <p className="text-muted-foreground text-lg">
-            Generate customized exam papers for Indian curricula (CBSE & State Boards)
+            Generate customized exam papers for CBSE, State Board, ICSE, IB, and IGCSE curricula
           </p>
         </div>
 
@@ -103,6 +121,9 @@ export function ExamGeneratorPage() {
                   <SelectContent>
                     <SelectItem value="CBSE">CBSE</SelectItem>
                     <SelectItem value="State">State Board</SelectItem>
+                    <SelectItem value="ICSE">ICSE</SelectItem>
+                    <SelectItem value="IB">IB</SelectItem>
+                    <SelectItem value="IGCSE">IGCSE</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

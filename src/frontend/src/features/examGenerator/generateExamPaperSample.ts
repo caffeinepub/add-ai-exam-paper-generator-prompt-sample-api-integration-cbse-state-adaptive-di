@@ -7,7 +7,7 @@ import type { backendInterface } from '../../backend';
 import type { ExamRequest } from './examTypes';
 import { validateLLMConfig, buildLLMRequest } from './llmConfig';
 import { parseExamPaper, type ParseResult } from './parseExamPaper';
-import EXAM_GENERATOR_SYSTEM_PROMPT from './examSystemPrompt';
+import { EXAM_GENERATOR_SYSTEM_PROMPT } from './examSystemPrompt';
 import { buildUserPrompt } from './buildUserPrompt';
 import { Board } from './examTypes';
 

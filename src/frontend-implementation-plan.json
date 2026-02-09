@@ -1,37 +1,26 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix Student Dashboard quick actions to navigate via AppShell currentPage",
+  "title": "Onboarding: show duplicate-email error and improve profile creation error mapping",
   "requirements": [
     {
-      "id": "REQ-16",
-      "summary": "Wire Student Dashboard quick-action cards to navigate to Tutor and Exam Generator using AppShell navigation state, with accessible interaction.",
+      "id": "REQ-30",
+      "summary": "Improve onboarding profile-creation error handling to surface duplicate-email errors and avoid incorrect permission messaging.",
       "acceptanceCriteria": [
-        "When logged in as a student and viewing the Student Dashboard, clicking the “AI Tutor” quick-action card navigates to the Tutor page (the same view as selecting Tutor in the header).",
-        "When logged in as a student and viewing the Student Dashboard, clicking the “Exam Generator” quick-action card navigates to the Exam Generator page (the same view as selecting Exam Generator in the header).",
-        "Navigation is implemented by wiring a dashboard-level navigation callback (e.g., AppShell’s setCurrentPage) into StudentDashboardPage and binding it to the quick-action card click handlers.",
-        "Quick-action cards remain visually clickable and are keyboard-accessible (e.g., support Enter/Space activation) or are implemented with accessible interactive elements."
+        "When backend profile creation fails with an error containing \"Email already registered\", the onboarding page displays exactly: \"Email already registered\" in the destructive alert.",
+        "When backend profile creation fails for reasons other than authorization/permissions, the onboarding page does not incorrectly display: \"You do not have permission to create this type of profile. Please contact an administrator.\"",
+        "Current successful flow remains: after a successful profile creation, the app invalidates/refetches ['currentUserProfile'] and AppShell proceeds to the appropriate dashboard without manual refresh."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/dashboards/student/StudentDashboardPage.tsx",
-          "operation": "modify",
-          "description": "Add an optional navigation callback prop (aligned with AppShell’s currentPage model) and bind it to the “AI Tutor” and “Exam Generator” quick-action cards so they activate navigation on click; implement the cards as accessible interactive elements (e.g., buttons) or add keyboard handlers (Enter/Space), focusability, and appropriate aria labels while preserving existing layout/styling."
-        }
-      ]
-    },
-    {
-      "id": "REQ-17",
-      "summary": "Pass AppShell navigation handler into StudentDashboardPage without changing Parent Dashboard or Header navigation behavior.",
-      "acceptanceCriteria": [
-        "Parent users still see ParentDashboardPage when on the dashboard view, and student-only navigation continues to function from the header.",
-        "No changes are required to backend canister methods or data models for this navigation fix."
-      ],
-      "file_operations": [
+          "path": "frontend/src/features/onboarding/profileCreationErrors.ts",
+          "operation": "create",
+          "description": "Add a small helper to map backend/profile-creation failures into user-facing onboarding messages, including exact handling for duplicate-email errors (display exactly \"Email already registered\") and more specific permission-message gating. Verify the component's usage instructions before implementing."
+        },
         {
-          "path": "frontend/src/app/AppShell.tsx",
+          "path": "frontend/src/features/onboarding/OnboardingProfilePage.tsx",
           "operation": "modify",
-          "description": "Update the student dashboard render path to pass AppShell’s existing setCurrentPage handler into StudentDashboardPage (e.g., as an onNavigate prop), while keeping ParentDashboardPage rendering unchanged and leaving Header’s onNavigate behavior intact; do not introduce any new routing framework."
+          "description": "Use the new profile creation error-mapping helper to set the destructive error alert message. Ensure the UI shows exactly \"Email already registered\" when present, and only shows the generic permission error when the backend failure is truly authorization-related; otherwise prefer a safe generic message or the backend message when user-friendly. Continue using the existing shadcn-ui Alert component for destructive messaging. Verify the component's usage instructions before implementing."
         }
       ]
     }

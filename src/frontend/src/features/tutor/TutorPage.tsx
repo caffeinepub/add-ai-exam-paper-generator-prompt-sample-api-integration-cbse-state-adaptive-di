@@ -1,20 +1,31 @@
 /**
  * AI Tutor page for interactive learning sessions.
- * Students can ask questions and receive step-by-step explanations.
+ * Students can ask questions, attach files, select explanation language, and receive step-by-step explanations.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, BookOpen, Save, AlertCircle } from 'lucide-react';
+import { Loader2, BookOpen, Save, AlertCircle, Paperclip, X, FileText, Image as ImageIcon } from 'lucide-react';
 import { generateTutorResponse } from './generateTutorResponse';
 import { useRecordTutoringSession } from './useRecordTutoringSession';
 import { useGetCallerUserProfile } from '../auth/useGetCallerUserProfile';
+import { IndiaLanguageSelect } from '../language/IndiaLanguageSelect';
 import { toast } from 'sonner';
+
+interface AttachedFile {
+  file: File;
+  preview?: string;
+  extractedText?: string;
+}
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg'];
+const ACCEPTED_DOC_TYPES = ['application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
 export function TutorPage() {
   const { data: userProfile } = useGetCallerUserProfile();
@@ -26,8 +37,122 @@ export function TutorPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
   const [understandingScore, setUnderstandingScore] = useState('3');
+  const [explanationLanguage, setExplanationLanguage] = useState('english');
+  const [attachedFiles, setAttachedFiles] = useState<AttachedFile[]>([]);
 
   const recordSessionMutation = useRecordTutoringSession();
+
+  // Load saved language preference
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem('tutorExplanationLanguage');
+    if (savedLanguage) {
+      setExplanationLanguage(savedLanguage);
+    }
+  }, []);
+
+  // Save language preference
+  useEffect(() => {
+    localStorage.setItem('tutorExplanationLanguage', explanationLanguage);
+  }, [explanationLanguage]);
+
+  // Cleanup object URLs on unmount
+  useEffect(() => {
+    return () => {
+      attachedFiles.forEach((af) => {
+        if (af.preview) {
+          URL.revokeObjectURL(af.preview);
+        }
+      });
+    };
+  }, [attachedFiles]);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    
+    for (const file of files) {
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`File "${file.name}" exceeds 5MB limit`);
+        continue;
+      }
+
+      // Validate file type
+      const isImage = ACCEPTED_IMAGE_TYPES.includes(file.type);
+      const isDoc = ACCEPTED_DOC_TYPES.includes(file.type);
+      
+      if (!isImage && !isDoc) {
+        toast.error(`File "${file.name}" has unsupported format`);
+        continue;
+      }
+
+      const attachedFile: AttachedFile = { file };
+
+      // Create preview for images
+      if (isImage) {
+        attachedFile.preview = URL.createObjectURL(file);
+      }
+
+      // Extract text from .txt files
+      if (file.type === 'text/plain') {
+        try {
+          const text = await file.text();
+          attachedFile.extractedText = text;
+        } catch (err) {
+          console.error('Failed to read text file:', err);
+        }
+      }
+
+      setAttachedFiles((prev) => [...prev, attachedFile]);
+    }
+
+    // Reset input
+    e.target.value = '';
+  };
+
+  const removeFile = (index: number) => {
+    setAttachedFiles((prev) => {
+      const file = prev[index];
+      if (file.preview) {
+        URL.revokeObjectURL(file.preview);
+      }
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const buildAttachmentContext = (): string => {
+    let context = '';
+    
+    // Add extracted text from .txt files
+    const textFiles = attachedFiles.filter((af) => af.extractedText);
+    if (textFiles.length > 0) {
+      context += '\n\nAttached Document Content:\n';
+      textFiles.forEach((af) => {
+        context += `\n--- ${af.file.name} ---\n${af.extractedText}\n`;
+      });
+    }
+
+    // Add notes for non-text documents
+    const nonTextDocs = attachedFiles.filter(
+      (af) => !af.extractedText && ACCEPTED_DOC_TYPES.includes(af.file.type)
+    );
+    if (nonTextDocs.length > 0) {
+      context += '\n\nAttached Documents (content not extracted):\n';
+      nonTextDocs.forEach((af) => {
+        context += `- ${af.file.name}\n`;
+      });
+    }
+
+    // Add notes for images
+    const images = attachedFiles.filter((af) => ACCEPTED_IMAGE_TYPES.includes(af.file.type));
+    if (images.length > 0) {
+      context += '\n\nAttached Images:\n';
+      images.forEach((af) => {
+        context += `- ${af.file.name}\n`;
+      });
+    }
+
+    return context;
+  };
 
   const handleAsk = async () => {
     if (!subject.trim() || !question.trim()) {
@@ -40,11 +165,15 @@ export function TutorPage() {
     setResponse('');
 
     try {
+      const attachmentContext = attachedFiles.length > 0 ? buildAttachmentContext() : undefined;
+      
       const result = await generateTutorResponse({
         grade: parseInt(grade),
         subject: subject.trim(),
         topic: topic.trim() || 'General',
         question: question.trim(),
+        explanationLanguage,
+        attachmentContext,
       });
 
       setResponse(result);
@@ -128,6 +257,18 @@ export function TutorPage() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="explanationLanguage">Explanation language</Label>
+              <IndiaLanguageSelect
+                id="explanationLanguage"
+                value={explanationLanguage}
+                onValueChange={setExplanationLanguage}
+              />
+              <p className="text-xs text-muted-foreground">
+                Choose your preferred language for the tutor's explanation
+              </p>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="question">Your Question</Label>
               <Textarea
                 id="question"
@@ -136,6 +277,81 @@ export function TutorPage() {
                 onChange={(e) => setQuestion(e.target.value)}
                 rows={4}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="fileAttachment">Attach files (Optional)</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="fileAttachment"
+                  type="file"
+                  multiple
+                  accept={[...ACCEPTED_IMAGE_TYPES, ...ACCEPTED_DOC_TYPES].join(',')}
+                  onChange={handleFileChange}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById('fileAttachment')?.click()}
+                >
+                  <Paperclip className="mr-2 h-4 w-4" />
+                  Attach Files
+                </Button>
+                <span className="text-xs text-muted-foreground">
+                  Images, PDF, TXT, DOC/DOCX (max 5MB)
+                </span>
+              </div>
+
+              {/* File previews */}
+              {attachedFiles.length > 0 && (
+                <div className="space-y-2 mt-3">
+                  {attachedFiles.map((af, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center gap-3 p-2 border rounded-lg bg-muted/30"
+                    >
+                      {af.preview ? (
+                        <img
+                          src={af.preview}
+                          alt={af.file.name}
+                          className="w-12 h-12 object-cover rounded"
+                        />
+                      ) : ACCEPTED_IMAGE_TYPES.includes(af.file.type) ? (
+                        <div className="w-12 h-12 flex items-center justify-center bg-muted rounded">
+                          <ImageIcon className="w-6 h-6 text-muted-foreground" />
+                        </div>
+                      ) : (
+                        <div className="w-12 h-12 flex items-center justify-center bg-muted rounded">
+                          <FileText className="w-6 h-6 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{af.file.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {(af.file.size / 1024).toFixed(1)} KB
+                          {af.extractedText && ' • Text extracted'}
+                        </p>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeFile(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {attachedFiles.some((af) => ACCEPTED_DOC_TYPES.includes(af.file.type) && !af.extractedText) && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Note: For PDF/DOC files, please paste key text from the document into your question for best results.
+                </p>
+              )}
             </div>
 
             <Button

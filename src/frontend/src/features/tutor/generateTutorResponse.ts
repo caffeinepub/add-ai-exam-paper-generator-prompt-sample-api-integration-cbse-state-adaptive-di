@@ -12,6 +12,8 @@ interface TutorRequestParams {
   subject: string;
   topic: string;
   question: string;
+  explanationLanguage?: string;
+  attachmentContext?: string;
 }
 
 export async function generateTutorResponse(params: TutorRequestParams): Promise<string> {

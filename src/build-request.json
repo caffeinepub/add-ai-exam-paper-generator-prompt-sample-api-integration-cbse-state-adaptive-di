@@ -1,56 +1,85 @@
 {
   "kind": "build_request",
-  "title": "Fix Student Dashboard quick actions to navigate to AI Tutor and Exam Generator pages",
-  "priority": "normal",
+  "title": "Fix onboarding profile creation permissions and add duplicate-email validation",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-16",
-      "text": "Make the Student Dashboard “AI Tutor” and “Exam Generator” quick-action cards navigate to their respective pages when clicked (AI Tutor → Tutor page, Exam Generator → Exam Generator page) using the existing AppShell in-app navigation state.",
-      "target": "frontend",
+      "id": "REQ-28",
+      "text": "Unblock self-service onboarding by ensuring an authenticated Internet Identity user can create their own non-admin profile (Student/Parent/Teacher) without receiving the authorization error \"You do not have permission to create this type of profile. Please contact an administrator.\"",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-1"
         ],
         "quotes": [
-          "in dashboard if student clicks ai tutor and exam generator it needs to redirect to its respective page,update the code accordingly pls"
+          "getting this message and profile creation not working You do not have permission to create this type of profile. Please contact an administrator."
         ]
       },
       "acceptanceCriteria": [
-        "When logged in as a student and viewing the Student Dashboard, clicking the “AI Tutor” quick-action card navigates to the Tutor page (the same view as selecting Tutor in the header).",
-        "When logged in as a student and viewing the Student Dashboard, clicking the “Exam Generator” quick-action card navigates to the Exam Generator page (the same view as selecting Exam Generator in the header).",
-        "Navigation is implemented by wiring a dashboard-level navigation callback (e.g., AppShell’s setCurrentPage) into StudentDashboardPage and binding it to the quick-action card click handlers.",
-        "Quick-action cards remain visually clickable and are keyboard-accessible (e.g., support Enter/Space activation) or are implemented with accessible interactive elements."
+        "When a logged-in user with no existing profile calls createUserProfile for role Student, Parent, or Teacher with principal == caller, the call succeeds and returns a new profile id (no permission/unauthorized trap).",
+        "When an unauthenticated/anonymous caller attempts to create a profile, the backend rejects the request with a clear authentication-required error (no false 'permission to create this type of profile' message).",
+        "Creating a School Admin profile via self-service remains disallowed unless explicitly authorized by an administrator (existing frontend restriction must remain effective; backend should not silently allow self-creation of schoolAdmin)."
       ]
     },
     {
-      "id": "REQ-17",
-      "text": "Update AppShell to pass the navigation handler into StudentDashboardPage without altering the existing Parent Dashboard behavior or the Header navigation behavior.",
-      "target": "frontend",
+      "id": "REQ-29",
+      "text": "Implement backend email uniqueness validation during profile creation: if a new profile is created with an email that is already registered for any existing user, the backend must reject the creation with the exact error text \"Email already registered\".",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-1"
         ],
         "quotes": [
-          "in dashboard if student clicks ai tutor and exam generator it needs to redirect to its respective page,update the code accordingly pls"
+          "Please implement email validation same mail try to create show the error message : email already registered"
         ]
       },
       "acceptanceCriteria": [
-        "Parent users still see ParentDashboardPage when on the dashboard view, and student-only navigation continues to function from the header.",
-        "No changes are required to backend canister methods or data models for this navigation fix."
+        "If two different principals attempt to create profiles with the same email address, the second attempt fails and returns/traps with the exact message \"Email already registered\".",
+        "Email uniqueness check is case-insensitive and ignores leading/trailing whitespace (e.g., \"Test@Email.com\" and \" test@email.com \" are treated as the same email).",
+        "If a profile already exists for a principal, the existing behavior (rejecting duplicate principal profile creation) continues to work and does not mask the \"Email already registered\" error for the email-duplicate case."
+      ]
+    },
+    {
+      "id": "REQ-30",
+      "text": "Update the onboarding UI error handling to show a specific user-facing error message \"Email already registered\" when the backend rejects profile creation due to duplicate email, and avoid showing the generic permission error for non-admin roles when the backend indicates a different failure reason.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "Please implement email validation same mail try to create show the error message : email already registered"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When backend profile creation fails with an error containing \"Email already registered\", the onboarding page displays exactly: \"Email already registered\" in the destructive alert.",
+        "When backend profile creation fails for reasons other than authorization/permissions, the onboarding page does not incorrectly display: \"You do not have permission to create this type of profile. Please contact an administrator.\"",
+        "Current successful flow remains: after a successful profile creation, the app invalidates/refetches ['currentUserProfile'] and AppShell proceeds to the appropriate dashboard without manual refresh."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or anything under frontend/src/components/ui (immutable paths).",
-    "Keep routing/navigation consistent with the existing AppShell currentPage state model (do not introduce a new routing framework)."
+    "Backend must remain a single Motoko actor with all logic in backend/main.mo.",
+    "Do not edit frontend files under frontend/src/components/ui or any paths listed in frontend.immutablePaths.",
+    "Use English for all user-facing text."
   ],
   "nonGoals": [
-    "Adding new dashboard features beyond fixing navigation for the two quick-action tiles.",
-    "Changing the visual theme or redesigning dashboard layout.",
-    "Adding backend endpoints or modifying backend state for navigation."
+    "Adding third-party authentication providers or email verification emails.",
+    "Building an admin UI for managing users or schools.",
+    "Adding an external database or off-chain persistence for email indexing."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

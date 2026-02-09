@@ -1,9 +1,10 @@
 /**
  * Authenticated app shell with role-based navigation and routing.
  * Handles login gate, profile setup, and renders appropriate dashboard based on user role.
+ * Automatically navigates to dashboard after successful profile creation.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useGetCallerUserProfile } from '../features/auth/useGetCallerUserProfile';
 import { LoginPage } from '../features/auth/LoginPage';
@@ -25,6 +26,14 @@ export function AppShell() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
 
   const isAuthenticated = !!identity;
+
+  // Reset to dashboard when profile is created
+  useEffect(() => {
+    if (userProfile && currentPage !== 'dashboard') {
+      // Profile was just created, ensure we're on dashboard
+      setCurrentPage('dashboard');
+    }
+  }, [userProfile]);
 
   // Show loading during initialization
   if (isInitializing) {

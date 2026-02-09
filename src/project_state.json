@@ -1,19 +1,25 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
+  "projectStateVersion": 19,
   "summary": "AI Tutor app (Internet Computer stack) with core features: homework helper (image upload → OCR → step-by-step explanation + TTS), daily AI study planner, parent dashboard analytics, subscription billing (Stripe/Razorpay), and exam/testing module (exams, questions, attempts, rewards) including AI-generated exam paper creation aligned to Indian curricula (CBSE/State).",
   "architectural_notes": [
     "Target stack discussed: Internet Computer backend (Motoko) with React + TypeScript + Tailwind frontend; Next.js noted as desired but may not be supported in this environment.",
     "Subscriptions: payment initiation handled client-side with Stripe/Razorpay; backend canister verifies webhooks and maintains user billing/entitlement state.",
     "Exam/testing persistence: PostgreSQL schema additions for exams/questions/attempts/answers/rewards.",
     "Ensure no dummy/hardcoded LLM API keys ship in demo builds; use environment variables/secret management and safe placeholder values in client-visible code.",
-    "Gemini API key must be provided via environment/secret configuration (not hardcoded or committed); app should support updating the LLM key via env/config for testing."
+    "Gemini API key must be provided via environment/secret configuration (not hardcoded or committed); app should support updating the LLM key via env/config for testing.",
+    "Support multilingual tutoring output via a user-selected language (India languages dropdown) that is passed to the LLM/prompt layer for explanations.",
+    "Support additional curriculum boards/syllabus types beyond CBSE/State (ICSE, IB, IGCSE) across UI selection, backend validation, and exam/tutor prompt builders.",
+    "Profile creation should validate email format and enforce uniqueness (case-insensitive) at the backend/API layer, returning a stable error code/message the UI can map to a friendly \"email already registered\" message."
   ],
   "known_issues": [
     "Platform/tooling limitation mentioned: Next.js frontend generation not supported; fallback suggested to React + Vite + Tailwind.",
     "Codebase may contain dummy/hardcoded LLM API keys that must be replaced/removed before client demos (use env/secret injection).",
     "User supplied a real Gemini API key for testing; ensure it is not committed/hardcoded and rotate/revoke if it was ever exposed in code/logs.",
-    "Student dashboard buttons/links for “AI Tutor” and “Exam Generator” are not redirecting to their respective pages; update routing/navigation so clicks navigate correctly."
+    "Student dashboard buttons/links for “AI Tutor” and “Exam Generator” are not redirecting to their respective pages; update routing/navigation so clicks navigate correctly.",
+    "Profile creation is failing (user reported a profile creation issue that needs fixing).",
+    "Profile creation still fails with authorization error: \"You do not have permission to create this type of profile. Please contact an administrator.\" (user reports onboarding/profile creation blocked).",
+    "Missing duplicate-email handling: creating a profile with an already-registered email should return a clear \"email already registered\" error instead of failing silently/unclearly."
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -128,6 +134,78 @@
         "REQ-17"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-a-reusable-india-native-language-dropdown-list-english-ui-labels-that-includes-a-comprehensive-set-of-indian-native-languages-and-expose-the-selected-language-as-a-value-usable-by-tutor-exam-prompt-builders",
+      "title": "Add a reusable India native-language dropdown list (English UI labels) that includes a comprehensive set of Indian native languages, and expose the selected language as a value usable by tutor/exam prompt builders.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-ai-tutor-page-to-let-a-student-select-their-preferred-explanation-language-from-the-india-native-language-dropdown-persist-the-selection-on-the-client-and-instruct-the-llm-to-respond-in-that-language",
+      "title": "Update the AI Tutor page to let a student select their preferred explanation language from the India native-language dropdown, persist the selection on the client, and instruct the LLM to respond in that language.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-document-and-image-upload-capability-in-the-tutor-page-so-students-can-attach-learning-materials-images-documents-to-their-question-context-including-preview-and-safe-handling-without-storing-uploaded-files-in-the-backend",
+      "title": "Add document and image upload capability in the Tutor page so students can attach learning materials (images/documents) to their question context, including preview and safe handling, without storing uploaded files in the backend.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-expand-the-exam-generator-board-syllabus-type-model-to-include-icse-user-requested-icsc-ib-and-igcse-in-addition-to-the-existing-cbse-and-state-options-so-these-values-can-be-selected-and-passed-through-the-request-object",
+      "title": "Expand the Exam Generator board/syllabus type model to include ICSE (user requested \"ICSC\"), IB, and IGCSE in addition to the existing CBSE and State options, so these values can be selected and passed through the request object.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-exam-generator-ui-to-show-the-new-board-syllabus-options-icse-ib-igcse-in-the-board-dropdown-and-ensure-selecting-each-option-correctly-updates-internal-state-and-the-generated-exam-request",
+      "title": "Update the Exam Generator UI to show the new board/syllabus options (ICSE, IB, IGCSE) in the Board dropdown, and ensure selecting each option correctly updates internal state and the generated exam request.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-exam-generation-prompts-reflect-the-expanded-board-syllabus-types-by-updating-the-board-to-text-mapping-used-in-the-user-prompt-and-updating-the-exam-system-prompt-wording-so-it-does-not-restrict-the-generator-to-only-cbse-state",
+      "title": "Ensure the exam generation prompts reflect the expanded board/syllabus types by updating the board-to-text mapping used in the user prompt and updating the exam system prompt wording so it does not restrict the generator to only CBSE/State.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-any-exam-generator-user-facing-copy-that-currently-claims-support-only-for-cbse-state-so-it-accurately-reflects-support-for-cbse-state-icse-ib-and-igcse",
+      "title": "Update any Exam Generator user-facing copy that currently claims support only for \"CBSE & State\" so it accurately reflects support for CBSE, State, ICSE, IB, and IGCSE.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-react-onboarding-flow-to-use-the-backend-self-service-profile-creation-api-handle-authorization-validation-errors-cleanly-in-the-ui-and-prevent-users-from-selecting-a-role-that-the-backend-will-reject-for-self-onboarding",
+      "title": "Update the React onboarding flow to use the backend self-service profile creation API, handle authorization/validation errors cleanly in the UI, and prevent users from selecting a role that the backend will reject for self-onboarding.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-onboarding-ui-error-handling-to-show-a-specific-user-facing-error-message-email-already-registered-when-the-backend-rejects-profile-creation-due-to-duplicate-email-and-avoid-showing-the-generic-permission-error-for-non-admin-roles-when-the-backend-indicates-a-different-failure-reason",
+      "title": "Update the onboarding UI error handling to show a specific user-facing error message \"Email already registered\" when the backend rejects profile creation due to duplicate email, and avoid showing the generic permission error for non-admin roles when the backend indicates a different failure reason.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -200,6 +278,62 @@
       "summary": "Add backend progress tracking APIs for students that allow recording and querying learning activity needed for a parent dashboard. Track at least: tutoring sessions completed, topics covered, timestamps, and simple performance signals (e.g., self-reported understanding score 1–5 and/or correctness on quick checks). Provide aggregated queries suitable for dashboards (daily/weekly summaries, weak topics, recent activity).",
       "reqIds": [
         "REQ-7"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Add functionality to upload documents and images (document/image upload support for student inputs).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Add an India native languages dropdown (comprehensive list) and use selected language to generate explanations so students can learn in their native language.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Expand exam generator syllabus/board types to include ICSE (user wrote ICSC), IB, and IGCSE in addition to CBSE/State, and ensure these options flow through prompts/UI/backend validation wherever board/syllabus is selected.",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Fix backend profile onboarding so a newly authenticated Internet Identity user (with no existing profile/permissions) can fetch their own profile state without trapping, and can create their own profile without requiring an admin caller.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Unblock onboarding school selection by ensuring the schools list can be fetched during onboarding even when the user has not created a profile yet.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Add email validation/uniqueness check during profile creation: if a user tries to register with an email that already exists, block creation and show a clear UI/backend error message like \"email already registered\".",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "Unblock self-service onboarding by ensuring an authenticated Internet Identity user can create their own non-admin profile (Student/Parent/Teacher) without receiving the authorization error \"You do not have permission to create this type of profile. Please contact an administrator.\"",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Implement backend email uniqueness validation during profile creation: if a new profile is created with an email that is already registered for any existing user, the backend must reject the creation with the exact error text \"Email already registered\".",
+      "reqIds": [
+        "REQ-29"
       ],
       "status": "pending"
     }

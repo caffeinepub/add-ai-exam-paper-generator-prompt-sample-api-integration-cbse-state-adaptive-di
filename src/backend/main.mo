@@ -11,8 +11,6 @@ import Runtime "mo:core/Runtime";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
-// Use persistent actor class with migration
-
 actor {
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
@@ -116,9 +114,6 @@ actor {
 
   // Required profile management functions
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can view profiles");
-    };
     getUserByPrincipal(caller);
   };
 
@@ -130,22 +125,26 @@ actor {
   };
 
   public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can save profiles");
+    if (not (AccessControl.hasPermission(accessControlState, caller, #guest))) {
+      Runtime.trap("Unauthorized: Only authenticated users can save profiles");
+    };
+
+    // Verify the profile belongs to the caller
+    if (profile.principal != caller) {
+      Runtime.trap("Unauthorized: Cannot modify another user's profile");
     };
 
     switch (getUserIdByPrincipal(caller)) {
       case (?existingId) {
         if (existingId != profile.id) {
-          Runtime.trap("Unauthorized: Cannot modify another user's profile");
+          Runtime.trap("Unauthorized: Profile ID mismatch");
         };
+        users.add(profile.id, profile);
       };
       case (null) {
-        Runtime.trap("User profile not found");
+        Runtime.trap("Profile not found. Use createUserProfile to create a new profile.");
       };
     };
-
-    users.add(profile.id, profile);
   };
 
   public shared ({ caller }) func createSchool(name : Text, address : Text, contactEmail : Text) : async Nat {
@@ -186,9 +185,36 @@ actor {
     id;
   };
 
+  // Now allows self-service onboarding for all user types except school admin
   public shared ({ caller }) func createUserProfile(principal : Principal, name : Text, email : Text, role : MyUserRole, schoolId : ?Nat, groupId : ?Nat) : async Nat {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can create user profiles");
+    if (not (AccessControl.hasPermission(accessControlState, caller, #guest))) {
+      Runtime.trap("Unauthorized: Only authenticated users can create user profiles");
+    };
+
+    // Check if profile already exists
+    switch (getUserIdByPrincipal(principal)) {
+      case (?_existingId) {
+        Runtime.trap("Profile already exists for this principal");
+      };
+      case (null) {};
+    };
+
+    // Users can only create their own profile, unless they are admin
+    if (principal != caller and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only create your own profile");
+    };
+
+    // Only allow non-admin roles for self-service
+    if (role == #schoolAdmin and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("You do not have permission to create this type of profile. Please contact an administrator.");
+    };
+
+    // Check for email uniqueness
+    switch (users.values().find(func(profile) { profile.email == email })) {
+      case (null) {};
+      case (?_) {
+        Runtime.trap("Email already registered");
+      };
     };
 
     let id = nextId;
@@ -394,9 +420,7 @@ actor {
   };
 
   public query ({ caller }) func getSchools() : async [School] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Authentication required");
-    };
+    // No authorization required - allows unauthenticated users to fetch schools during onboarding
     schools.values().toArray();
   };
 

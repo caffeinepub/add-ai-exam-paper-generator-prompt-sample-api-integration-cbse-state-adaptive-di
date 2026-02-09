@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-make-the-student-dashboard-ai-tutor-and-exam-generator-quick-action-cards-navigate-to-their-respective-pages-when-clicked-ai-tutor-tutor-page-exam-generator-exam-generator-page-using-the-existing-appshell-in-app-navigation-state",
-      "featureTitle": "Make the Student Dashboard “AI Tutor” and “Exam Generator” quick-action cards navigate to their respective pages when clicked (AI Tutor → Tutor page, Exam Generator → Exam Generator page) using the existing AppShell in-app navigation state.",
+      "featureId": "feature-update-the-onboarding-ui-error-handling-to-show-a-specific-user-facing-error-message-email-already-registered-when-the-backend-rejects-profile-creation-due-to-duplicate-email-and-avoid-showing-the-generic-permission-error-for-non-admin-roles-when-the-backend-indicates-a-different-failure-reason",
+      "featureTitle": "Update the onboarding UI error handling to show a specific user-facing error message \"Email already registered\" when the backend rejects profile creation due to duplicate email, and avoid showing the generic permission error for non-admin roles when the backend indicates a different failure reason.",
       "files": [
-        "frontend/src/features/dashboards/student/StudentDashboardPage.tsx"
+        "frontend/src/features/onboarding/OnboardingProfilePage.tsx",
+        "frontend/src/features/onboarding/profileCreationErrors.ts"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -16,26 +17,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-16"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-appshell-to-pass-the-navigation-handler-into-studentdashboardpage-without-altering-the-existing-parent-dashboard-behavior-or-the-header-navigation-behavior",
-      "featureTitle": "Update AppShell to pass the navigation handler into StudentDashboardPage without altering the existing Parent Dashboard behavior or the Header navigation behavior.",
-      "files": [
-        "frontend/src/app/AppShell.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-17"
+        "REQ-30"
       ],
       "confidence": "high"
     }

@@ -8,6 +8,9 @@ import { Principal } from '@icp-sdk/core/principal';
 export enum Board {
   CBSE = 'CBSE',
   State = 'State',
+  ICSE = 'ICSE',
+  IB = 'IB',
+  IGCSE = 'IGCSE',
 }
 
 export interface SyllabusScope {
