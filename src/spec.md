@@ -1,12 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Enable safe local testing of the Gemini integration by loading the API key from a developer-only environment file (not committed), and document the setup clearly in English.
+**Goal:** Fix Student Dashboard quick-action navigation so “AI Tutor” and “Exam Generator” tiles open their respective in-app pages.
 
 **Planned changes:**
-- Ensure the frontend reads the LLM API key from `VITE_LLM_API_KEY` via the existing env-based configuration path, intended for use in a non-committed local env file (e.g., `frontend/.env.local`).
-- Preserve existing behavior when `VITE_LLM_API_KEY` is missing: show the current configuration error and do not attempt LLM calls.
-- Update `LLM_DEMO_SETUP.md` with clear English instructions for local Gemini testing, including where to put the API key and how `VITE_LLM_API_URL` and `VITE_LLM_MODEL` control provider/model selection.
-- Keep committed templates repo-safe (e.g., `frontend/.env.example` remains committed with no real API key populated) and ensure the provided key is not present in any source-controlled file.
+- Wire the Student Dashboard “AI Tutor” and “Exam Generator” quick-action card click/activation handlers to AppShell’s existing in-app navigation state (e.g., `setCurrentPage`), so they navigate to Tutor and Exam Generator views.
+- Update AppShell to pass a navigation handler into `StudentDashboardPage` while keeping existing Parent Dashboard behavior and Header navigation unchanged.
+- Ensure the quick-action cards are implemented as accessible interactive elements (or support keyboard activation via Enter/Space) while remaining visually clickable.
 
-**User-visible outcome:** Developers can locally test Gemini by placing their API key in a local-only env file; if not configured, the app continues to show the existing configuration error, and setup docs explain the required env vars without exposing secrets.
+**User-visible outcome:** When logged in as a student, clicking (or keyboard-activating) the “AI Tutor” or “Exam Generator” quick-action card on the Student Dashboard opens the same Tutor or Exam Generator page as selecting those items from the header.

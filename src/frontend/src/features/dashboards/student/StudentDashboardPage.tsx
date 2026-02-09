@@ -3,14 +3,19 @@
  */
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { BookOpen, FileText, TrendingUp, Clock, Award } from 'lucide-react';
 import { useGetCallerUserProfile } from '../../auth/useGetCallerUserProfile';
 import { useStudentDashboardData } from './useStudentDashboardData';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 
-export function StudentDashboardPage() {
+type Page = 'dashboard' | 'tutor' | 'exam-generator';
+
+interface StudentDashboardPageProps {
+  onNavigate?: (page: Page) => void;
+}
+
+export function StudentDashboardPage({ onNavigate }: StudentDashboardPageProps) {
   const { data: userProfile } = useGetCallerUserProfile();
   const { recentActivity, weeklySummary, isLoading } = useStudentDashboardData(
     userProfile?.id || BigInt(0)
@@ -28,6 +33,21 @@ export function StudentDashboardPage() {
       </div>
     );
   }
+
+  const handleNavigateToTutor = () => {
+    onNavigate?.('tutor');
+  };
+
+  const handleNavigateToExamGenerator = () => {
+    onNavigate?.('exam-generator');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent, action: () => void) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      action();
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -78,7 +98,14 @@ export function StudentDashboardPage() {
 
       {/* Quick Actions */}
       <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+        <Card 
+          className="hover:shadow-lg transition-shadow cursor-pointer focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
+          onClick={handleNavigateToTutor}
+          onKeyDown={(e) => handleKeyDown(e, handleNavigateToTutor)}
+          tabIndex={0}
+          role="button"
+          aria-label="Navigate to AI Tutor"
+        >
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-primary/10">
@@ -97,7 +124,14 @@ export function StudentDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+        <Card 
+          className="hover:shadow-lg transition-shadow cursor-pointer focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
+          onClick={handleNavigateToExamGenerator}
+          onKeyDown={(e) => handleKeyDown(e, handleNavigateToExamGenerator)}
+          tabIndex={0}
+          role="button"
+          aria-label="Navigate to Exam Generator"
+        >
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-primary/10">

@@ -1,57 +1,37 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Gemini local testing via non-committed env config + repo-safe docs",
+  "title": "Fix Student Dashboard quick actions to navigate via AppShell currentPage",
   "requirements": [
     {
-      "id": "REQ-14",
-      "summary": "Enable local Gemini testing by reading VITE_LLM_API_KEY from a developer-only env file without committing/hardcoding the key, and preserve existing missing-config error behavior.",
+      "id": "REQ-16",
+      "summary": "Wire Student Dashboard quick-action cards to navigate to Tutor and Exam Generator using AppShell navigation state, with accessible interaction.",
       "acceptanceCriteria": [
-        "No source-controlled file contains the API key string \"AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU\".",
-        "Local testing works by placing the key in a developer-only env file (e.g., frontend/.env.local) under VITE_LLM_API_KEY, with the app picking it up via existing env-based configuration.",
-        "If the key is not set in the environment, the app continues to show the existing user-facing configuration error instead of attempting an LLM call."
+        "When logged in as a student and viewing the Student Dashboard, clicking the “AI Tutor” quick-action card navigates to the Tutor page (the same view as selecting Tutor in the header).",
+        "When logged in as a student and viewing the Student Dashboard, clicking the “Exam Generator” quick-action card navigates to the Exam Generator page (the same view as selecting Exam Generator in the header).",
+        "Navigation is implemented by wiring a dashboard-level navigation callback (e.g., AppShell’s setCurrentPage) into StudentDashboardPage and binding it to the quick-action card click handlers.",
+        "Quick-action cards remain visually clickable and are keyboard-accessible (e.g., support Enter/Space activation) or are implemented with accessible interactive elements."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/examGenerator/llmConfig.ts",
+          "path": "frontend/src/features/dashboards/student/StudentDashboardPage.tsx",
           "operation": "modify",
-          "description": "Ensure LLM configuration is sourced exclusively from import.meta.env (VITE_LLM_API_KEY / VITE_LLM_API_URL / VITE_LLM_MODEL), with no fallback/hardcoded secrets, and that missing VITE_LLM_API_KEY returns the existing user-facing configuration error (so callers do not attempt an LLM call)."
-        },
-        {
-          "path": "frontend/src/features/examGenerator/generateExamPaperSample.ts",
-          "operation": "modify",
-          "description": "Confirm the exam-generation flow relies on validateLLMConfig() and returns the configuration error when invalid, without making an LLM request when VITE_LLM_API_KEY is absent."
-        },
-        {
-          "path": "frontend/src/features/tutor/generateTutorResponse.ts",
-          "operation": "modify",
-          "description": "Confirm the tutor flow relies on validateLLMConfig() and throws the existing configuration error when invalid, without making an LLM request when VITE_LLM_API_KEY is absent."
-        },
-        {
-          "path": "frontend/.gitignore",
-          "operation": "create",
-          "description": "Add a frontend-local gitignore that prevents committing developer-only env files (at minimum: .env.local and other .env.*.local patterns) to ensure the Gemini key cannot be accidentally committed."
+          "description": "Add an optional navigation callback prop (aligned with AppShell’s currentPage model) and bind it to the “AI Tutor” and “Exam Generator” quick-action cards so they activate navigation on click; implement the cards as accessible interactive elements (e.g., buttons) or add keyboard handlers (Enter/Space), focusability, and appropriate aria labels while preserving existing layout/styling."
         }
       ]
     },
     {
-      "id": "REQ-15",
-      "summary": "Update LLM demo/setup documentation with clear English instructions for Gemini testing, including env var usage for API key, base URL, and model, while keeping templates repo-safe.",
+      "id": "REQ-17",
+      "summary": "Pass AppShell navigation handler into StudentDashboardPage without changing Parent Dashboard or Header navigation behavior.",
       "acceptanceCriteria": [
-        "LLM_DEMO_SETUP.md explains how to set VITE_LLM_API_KEY for local testing and reiterates not to commit .env.local.",
-        "Documentation explicitly states that provider selection (including Gemini) is done via VITE_LLM_API_URL and VITE_LLM_MODEL, without embedding any real API keys in docs.",
-        "frontend/.env.example remains committed without any API key value populated."
+        "Parent users still see ParentDashboardPage when on the dashboard view, and student-only navigation continues to function from the header.",
+        "No changes are required to backend canister methods or data models for this navigation fix."
       ],
       "file_operations": [
         {
-          "path": "frontend/LLM_DEMO_SETUP.md",
+          "path": "frontend/src/app/AppShell.tsx",
           "operation": "modify",
-          "description": "Update the setup guide to include Gemini as a supported provider for local testing, with clear instructions to place the API key only in frontend/.env.local via VITE_LLM_API_KEY, reiterate not committing .env.local, and document that provider selection is controlled by VITE_LLM_API_URL (base URL) and VITE_LLM_MODEL (model name), including example values that contain no real keys."
-        },
-        {
-          "path": "frontend/.env.example",
-          "operation": "modify",
-          "description": "Keep the template repo-safe (VITE_LLM_API_KEY remains blank) while clarifying comments/examples that Gemini can be selected via VITE_LLM_API_URL and VITE_LLM_MODEL (no real key values included)."
+          "description": "Update the student dashboard render path to pass AppShell’s existing setCurrentPage handler into StudentDashboardPage (e.g., as an onNavigate prop), while keeping ParentDashboardPage rendering unchanged and leaving Header’s onNavigate behavior intact; do not introduce any new routing framework."
         }
       ]
     }

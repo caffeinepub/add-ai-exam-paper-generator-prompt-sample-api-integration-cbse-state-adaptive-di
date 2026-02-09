@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 9,
+  "projectStateVersion": 11,
   "summary": "AI Tutor app (Internet Computer stack) with core features: homework helper (image upload → OCR → step-by-step explanation + TTS), daily AI study planner, parent dashboard analytics, subscription billing (Stripe/Razorpay), and exam/testing module (exams, questions, attempts, rewards) including AI-generated exam paper creation aligned to Indian curricula (CBSE/State).",
   "architectural_notes": [
     "Target stack discussed: Internet Computer backend (Motoko) with React + TypeScript + Tailwind frontend; Next.js noted as desired but may not be supported in this environment.",
@@ -12,7 +12,8 @@
   "known_issues": [
     "Platform/tooling limitation mentioned: Next.js frontend generation not supported; fallback suggested to React + Vite + Tailwind.",
     "Codebase may contain dummy/hardcoded LLM API keys that must be replaced/removed before client demos (use env/secret injection).",
-    "User supplied a real Gemini API key for testing; ensure it is not committed/hardcoded and rotate/revoke if it was ever exposed in code/logs."
+    "User supplied a real Gemini API key for testing; ensure it is not committed/hardcoded and rotate/revoke if it was ever exposed in code/logs.",
+    "Student dashboard buttons/links for “AI Tutor” and “Exam Generator” are not redirecting to their respective pages; update routing/navigation so clicks navigate correctly."
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -109,6 +110,22 @@
       "title": "Update the LLM demo/setup documentation to include clear English instructions for testing with Gemini (including where to put the API key and which environment variables control the base URL and model), while keeping all committed templates repo-safe (no secrets).",
       "reqIds": [
         "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-make-the-student-dashboard-ai-tutor-and-exam-generator-quick-action-cards-navigate-to-their-respective-pages-when-clicked-ai-tutor-tutor-page-exam-generator-exam-generator-page-using-the-existing-appshell-in-app-navigation-state",
+      "title": "Make the Student Dashboard “AI Tutor” and “Exam Generator” quick-action cards navigate to their respective pages when clicked (AI Tutor → Tutor page, Exam Generator → Exam Generator page) using the existing AppShell in-app navigation state.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-appshell-to-pass-the-navigation-handler-into-studentdashboardpage-without-altering-the-existing-parent-dashboard-behavior-or-the-header-navigation-behavior",
+      "title": "Update AppShell to pass the navigation handler into StudentDashboardPage without altering the existing Parent Dashboard behavior or the Header navigation behavior.",
+      "reqIds": [
+        "REQ-17"
       ],
       "version": 1
     }

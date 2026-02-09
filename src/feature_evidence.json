@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-enable-local-testing-with-the-user-provided-gemini-api-key-by-configuring-the-app-to-read-it-from-a-non-committed-local-environment-file-do-not-hardcode-or-commit-the-key-anywhere-in-the-repository-the-key-to-use-for-local-testing-is-aizasycec7w-tohy2xawnwnumkmmwklwsex3efu",
-      "featureTitle": "Enable local testing with the user-provided Gemini API key by configuring the app to read it from a non-committed local environment file (do not hardcode or commit the key anywhere in the repository). The key to use for local testing is: AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU.",
+      "featureId": "feature-make-the-student-dashboard-ai-tutor-and-exam-generator-quick-action-cards-navigate-to-their-respective-pages-when-clicked-ai-tutor-tutor-page-exam-generator-exam-generator-page-using-the-existing-appshell-in-app-navigation-state",
+      "featureTitle": "Make the Student Dashboard “AI Tutor” and “Exam Generator” quick-action cards navigate to their respective pages when clicked (AI Tutor → Tutor page, Exam Generator → Exam Generator page) using the existing AppShell in-app navigation state.",
       "files": [
-        "frontend/.gitignore"
+        "frontend/src/features/dashboards/student/StudentDashboardPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -16,16 +16,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-14"
+        "REQ-16"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-llm-demo-setup-documentation-to-include-clear-english-instructions-for-testing-with-gemini-including-where-to-put-the-api-key-and-which-environment-variables-control-the-base-url-and-model-while-keeping-all-committed-templates-repo-safe-no-secrets",
-      "featureTitle": "Update the LLM demo/setup documentation to include clear English instructions for testing with Gemini (including where to put the API key and which environment variables control the base URL and model), while keeping all committed templates repo-safe (no secrets).",
+      "featureId": "feature-update-appshell-to-pass-the-navigation-handler-into-studentdashboardpage-without-altering-the-existing-parent-dashboard-behavior-or-the-header-navigation-behavior",
+      "featureTitle": "Update AppShell to pass the navigation handler into StudentDashboardPage without altering the existing Parent Dashboard behavior or the Header navigation behavior.",
       "files": [
-        "frontend/.env.example",
-        "frontend/LLM_DEMO_SETUP.md"
+        "frontend/src/app/AppShell.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -36,7 +35,7 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-15"
+        "REQ-17"
       ],
       "confidence": "high"
     }

@@ -1,67 +1,56 @@
 {
   "kind": "build_request",
-  "title": "Use provided Gemini API key for local testing via environment configuration (no secrets committed)",
+  "title": "Fix Student Dashboard quick actions to navigate to AI Tutor and Exam Generator pages",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-14",
-      "text": "Enable local testing with the user-provided Gemini API key by configuring the app to read it from a non-committed local environment file (do not hardcode or commit the key anywhere in the repository). The key to use for local testing is: AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU.",
+      "id": "REQ-16",
+      "text": "Make the Student Dashboard “AI Tutor” and “Exam Generator” quick-action cards navigate to their respective pages when clicked (AI Tutor → Tutor page, Exam Generator → Exam Generator page) using the existing AppShell in-app navigation state.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-6"
         ],
         "quotes": [
-          "update this gemini api key to test the app AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU"
+          "in dashboard if student clicks ai tutor and exam generator it needs to redirect to its respective page,update the code accordingly pls"
         ]
       },
       "acceptanceCriteria": [
-        "No source-controlled file contains the API key string \"AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU\".",
-        "Local testing works by placing the key in a developer-only env file (e.g., frontend/.env.local) under VITE_LLM_API_KEY, with the app picking it up via existing env-based configuration.",
-        "If the key is not set in the environment, the app continues to show the existing user-facing configuration error instead of attempting an LLM call."
+        "When logged in as a student and viewing the Student Dashboard, clicking the “AI Tutor” quick-action card navigates to the Tutor page (the same view as selecting Tutor in the header).",
+        "When logged in as a student and viewing the Student Dashboard, clicking the “Exam Generator” quick-action card navigates to the Exam Generator page (the same view as selecting Exam Generator in the header).",
+        "Navigation is implemented by wiring a dashboard-level navigation callback (e.g., AppShell’s setCurrentPage) into StudentDashboardPage and binding it to the quick-action card click handlers.",
+        "Quick-action cards remain visually clickable and are keyboard-accessible (e.g., support Enter/Space activation) or are implemented with accessible interactive elements."
       ]
     },
     {
-      "id": "REQ-15",
-      "text": "Update the LLM demo/setup documentation to include clear English instructions for testing with Gemini (including where to put the API key and which environment variables control the base URL and model), while keeping all committed templates repo-safe (no secrets).",
+      "id": "REQ-17",
+      "text": "Update AppShell to pass the navigation handler into StudentDashboardPage without altering the existing Parent Dashboard behavior or the Header navigation behavior.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-6"
         ],
         "quotes": [
-          "update this gemini api key to test the app AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU"
+          "in dashboard if student clicks ai tutor and exam generator it needs to redirect to its respective page,update the code accordingly pls"
         ]
       },
       "acceptanceCriteria": [
-        "LLM_DEMO_SETUP.md explains how to set VITE_LLM_API_KEY for local testing and reiterates not to commit .env.local.",
-        "Documentation explicitly states that provider selection (including Gemini) is done via VITE_LLM_API_URL and VITE_LLM_MODEL, without embedding any real API keys in docs.",
-        "frontend/.env.example remains committed without any API key value populated."
+        "Parent users still see ParentDashboardPage when on the dashboard view, and student-only navigation continues to function from the header.",
+        "No changes are required to backend canister methods or data models for this navigation fix."
       ]
     }
   ],
   "constraints": [
-    "Do not hardcode or commit any real API keys or secrets into the repository (including the provided Gemini key).",
-    "Keep using the existing env-based LLM configuration path (VITE_LLM_API_KEY / VITE_LLM_API_URL / VITE_LLM_MODEL) rather than introducing new secret storage mechanisms.",
-    "Use English for any user-facing text changes."
+    "Do not edit files under frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or anything under frontend/src/components/ui (immutable paths).",
+    "Keep routing/navigation consistent with the existing AppShell currentPage state model (do not introduce a new routing framework)."
   ],
   "nonGoals": [
-    "Implementing a backend proxy to hide API keys for production use.",
-    "Adding new third-party authentication or any external database/service integration.",
-    "Changing the app’s feature set beyond enabling local testing configuration and updating setup documentation."
+    "Adding new dashboard features beyond fixing navigation for the two quick-action tiles.",
+    "Changing the visual theme or redesigning dashboard layout.",
+    "Adding backend endpoints or modifying backend state for navigation."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

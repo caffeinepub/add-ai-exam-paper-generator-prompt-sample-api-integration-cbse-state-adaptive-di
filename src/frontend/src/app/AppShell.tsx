@@ -74,7 +74,7 @@ export function AppShell() {
     if (userProfile?.role === MyUserRole.parent) {
       return <ParentDashboardPage />;
     }
-    return <StudentDashboardPage />;
+    return <StudentDashboardPage onNavigate={setCurrentPage} />;
   };
 
   return (

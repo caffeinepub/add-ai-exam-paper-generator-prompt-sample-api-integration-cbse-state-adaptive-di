@@ -1,35 +1,24 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-09T04:43:08.603Z",
-  "summary": "The diff adds repo-safe local env handling (frontend/.gitignore), keeps env-based LLM configuration via VITE_* variables, and updates LLM_DEMO_SETUP.md and frontend/.env.example with Gemini instructions. However, the change set also appears to include many unrelated frontend feature/theme/auth changes beyond the requested local-testing configuration/documentation scope.",
-  "missing_requirements": [],
-  "hallucinated_features": [
+  "generatedAt": "2026-02-09T14:22:43.355Z",
+  "summary": "AppShell now passes the existing in-app navigation handler (setCurrentPage) into StudentDashboardPage, and StudentDashboardPage wires quick-action handlers intended to navigate to 'tutor' and 'exam-generator' via that callback. Click handling is present; keyboard accessibility support is partially evident but not fully verifiable from the truncated diff.",
+  "missing_requirements": [
     {
-      "description": "Broad frontend feature/theme/auth/dashboard changes beyond enabling local env-based Gemini testing and updating setup documentation.",
-      "reason": "BuildRequest non-goals explicitly disallow changing the app’s feature set beyond local testing configuration and documentation updates, but the diff summary indicates many unrelated files were modified (app shell, auth pages/hooks, dashboards, styling, prompts/types/parsers).",
+      "id": "REQ-16",
+      "requirement": "Quick-action cards remain visually clickable and are keyboard-accessible (e.g., support Enter/Space activation) or are implemented with accessible interactive elements.",
+      "reason": "The diff shows an onKeyDown handler that listens for Enter/Space, but in the visible snippet the clickable Card itself is not shown as focusable (e.g., via tabIndex=0) nor given an explicit interactive role (e.g., role=\"button\"). Without a focusable/interactive element, keyboard users may not be able to reach the card to trigger the key handler. The file is truncated, so this may exist outside the shown section, but it is not evidenced in the provided diff.",
       "evidence": [
-        "frontend-file-summaries.txt",
-        "frontend/src/App.tsx",
-        "frontend/src/index.css",
-        "frontend/tailwind.config.js",
-        "frontend/src/app/AppShell.tsx",
-        "frontend/src/components/Header.tsx",
-        "frontend/src/components/Footer.tsx",
-        "frontend/src/features/auth/LoginPage.tsx",
-        "frontend/src/features/dashboards/student/StudentDashboardPage.tsx",
-        "frontend/src/features/examGenerator/examSystemPrompt.ts",
-        "frontend/src/features/examGenerator/examPaperTypes.ts",
-        "frontend/src/features/examGenerator/parseExamPaper.ts"
+        "frontend/src/features/dashboards/student/StudentDashboardPage.tsx"
       ]
     }
   ],
-  "confidence": 0.62,
+  "hallucinated_features": [],
+  "confidence": 0.64,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/.env.example",
-    "frontend/.gitignore",
-    "frontend/LLM_DEMO_SETUP.md",
+    "frontend/src/app/AppShell.tsx",
+    "frontend/src/features/dashboards/student/StudentDashboardPage.tsx",
     "project_state.json"
   ]
 }

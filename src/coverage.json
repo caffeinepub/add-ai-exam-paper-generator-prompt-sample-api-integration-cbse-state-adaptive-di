@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-09T04:43:08.606Z",
+  "generatedAt": "2026-02-09T14:22:43.357Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,30 +11,25 @@
     "implemented": 2,
     "items": [
       {
-        "id": "REQ-14",
-        "summary": "Enable local testing with the user-provided Gemini API key by configuring the app to read it from a non-committed local environment file (do not hardcode or commit the key anywhere in the repository). The key to use for local testing is: AIzaSyCeC7W_tOhy2xaWNWnuMkmMwklwSEX3efU.",
+        "id": "REQ-16",
+        "summary": "Make the Student Dashboard “AI Tutor” and “Exam Generator” quick-action cards navigate to their respective pages when clicked (AI Tutor → Tutor page, Exam Generator → Exam Generator page) using the existing AppShell in-app navigation state.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/features/examGenerator/llmConfig.ts",
-          "frontend/src/features/examGenerator/generateExamPaperSample.ts",
-          "frontend/src/features/tutor/generateTutorResponse.ts",
-          "frontend/.gitignore"
+          "frontend/src/features/dashboards/student/StudentDashboardPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/.gitignore"
+          "frontend/src/features/dashboards/student/StudentDashboardPage.tsx"
         ]
       },
       {
-        "id": "REQ-15",
-        "summary": "Update the LLM demo/setup documentation to include clear English instructions for testing with Gemini (including where to put the API key and which environment variables control the base URL and model), while keeping all committed templates repo-safe (no secrets).",
+        "id": "REQ-17",
+        "summary": "Update AppShell to pass the navigation handler into StudentDashboardPage without altering the existing Parent Dashboard behavior or the Header navigation behavior.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/LLM_DEMO_SETUP.md",
-          "frontend/.env.example"
+          "frontend/src/app/AppShell.tsx"
         ],
         "matchedFiles": [
-          "frontend/LLM_DEMO_SETUP.md",
-          "frontend/.env.example"
+          "frontend/src/app/AppShell.tsx"
         ]
       }
     ]
@@ -44,9 +39,8 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/.env.example",
-    "frontend/.gitignore",
-    "frontend/LLM_DEMO_SETUP.md",
+    "frontend/src/app/AppShell.tsx",
+    "frontend/src/features/dashboards/student/StudentDashboardPage.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
